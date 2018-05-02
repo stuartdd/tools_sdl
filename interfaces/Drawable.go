@@ -6,5 +6,6 @@ import (
 )
 
 type Drawable interface {
-	Draw(surface *sdl.Surface, x int32, y int32)
+	Draw(renderer *sdl.Renderer)
+	Update(currentTime int64)
 }

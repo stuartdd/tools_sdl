@@ -4,12 +4,27 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type Palette struct {
-	CMap map[string]sdl.Color
+var palette map[string]sdl.Color
+
+func GetOpaqueColour(name string, opaq uint8) sdl.Color {
+	c, found := palette[name]
+	if found {
+		return sdl.Color{R: c.R, G: c.G, B: c.B, A: opaq}
+	}
+	return palette["Red"]
 }
 
-func (c *Palette) Init() {
-	c.CMap = map[string]sdl.Color{"Black": sdl.Color{R: 0x00, G: 0x00, B: 0x00, A: 255},
+func GetColour(name string) sdl.Color {
+	c, found := palette[name]
+	if found {
+		return c
+	}
+	return palette["Red"]
+}
+
+func InitPalette() {
+	palette = map[string]sdl.Color{
+		"Black":                    sdl.Color{R: 0x00, G: 0x00, B: 0x00, A: 255},
 		"Night":                    sdl.Color{R: 0x0C, G: 0x09, B: 0x0A, A: 255},
 		"Gunmetal":                 sdl.Color{R: 0x2C, G: 0x35, B: 0x39, A: 255},
 		"Midnight":                 sdl.Color{R: 0x2B, G: 0x1B, B: 0x17, A: 255},
