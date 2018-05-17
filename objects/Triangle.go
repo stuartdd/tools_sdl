@@ -2,7 +2,8 @@
 package objects
 
 import (
-	"github.com/stuartdd/tools_sdl/tools"
+	"tools_sdl/tools"
+
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
 )

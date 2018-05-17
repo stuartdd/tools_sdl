@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"github.com/stuartdd/tools_sdl/objects"
-	"github.com/stuartdd/tools_sdl/tools"
+	"tools_sdl/objects"
+	"tools_sdl/tools"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
