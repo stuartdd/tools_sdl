@@ -7,5 +7,6 @@ import (
 
 type Drawable interface {
 	Draw(renderer *sdl.Renderer)
-	Update(currentTime int64)
+	Update(currentTime float64)
+	InsideBounds(x float64, y float64) bool
 }

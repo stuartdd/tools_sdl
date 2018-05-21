@@ -9,6 +9,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+const NANO_PER_SECOND float64 = 1000000000
+
 func main() {
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
@@ -16,7 +18,7 @@ func main() {
 	defer sdl.Quit()
 
 	window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		800, 600, sdl.WINDOW_SHOWN)
+		900, 600, sdl.WINDOW_SHOWN)
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +42,7 @@ func main() {
 	running := true
 	for running {
 		timeTemp = time.Now().UnixNano()
-		timeDiff = float64(timeTemp-timeLast) / 1000000000.0
+		timeDiff = float64(timeTemp-timeLast) / NANO_PER_SECOND
 		timeLast = timeTemp
 
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {

@@ -49,6 +49,28 @@ func (p *Triangle) Draw(renderer *sdl.Renderer) {
 	}
 }
 
+func (p *Triangle) InsideBounds(x float64, y float64) bool {
+	xA := x - p.XOrigin
+	minX := min(p.X1, p.X2, p.X3)
+	if xA < minX {
+		return false
+	}
+	maxX := max(p.X1, p.X2, p.X3)
+	if xA > maxX {
+		return false
+	}
+	yA := y - p.YOrigin
+	minY := min(p.Y1, p.Y2, p.Y3)
+	if yA < minY {
+		return false
+	}
+	maxY := max(p.Y1, p.Y2, p.Y3)
+	if yA > maxY {
+		return false
+	}
+	return true
+}
+
 func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool) *Triangle {
 	return &Triangle{
 		Name:     name,
@@ -64,4 +86,24 @@ func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin f
 		Col:      col,
 		Enabled:  enabled,
 	}
+}
+
+func min(a float64, b float64, c float64) float64 {
+	if (a < b) && (a < c) {
+		return a
+	}
+	if b < c {
+		return b
+	}
+	return c
+}
+
+func max(a float64, b float64, c float64) float64 {
+	if (a > b) && (a > c) {
+		return a
+	}
+	if b > c {
+		return b
+	}
+	return c
 }
