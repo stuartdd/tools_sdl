@@ -23,6 +23,11 @@ func (p *Circle) Draw(renderer *sdl.Renderer) {
 		gfx.FilledCircleColor(renderer, int32(p.XOrigin), int32(p.YOrigin), int32(p.Radius), p.Col)
 	}
 }
+
+func (p *Circle) SetColor(newCol sdl.Color) {
+	p.Col = newCol
+}
+
 func NewCircle(name string, radius, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool) *Circle {
 	return &Circle{
 		Name:    name,

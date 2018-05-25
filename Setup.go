@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"tools_sdl/objects"
@@ -46,13 +47,23 @@ func main() {
 		timeLast = timeTemp
 
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
+			switch t := event.(type) {
 			case *sdl.QuitEvent:
 				println("Quit")
 				running = false
 				break
+			case *sdl.MouseMotionEvent:
+				if tri1.PointInside(float64(t.X), float64(t.Y)) {
+					tri1.SetColor(tools.GetColour("Blue"))
+				} else {
+					tri1.SetColor(tools.GetColour("Coral Blue"))
+				}
+				break
+			case *sdl.MouseButtonEvent:
+				fmt.Printf("MouseButton %d %d\n", t.X, t.Y)
 			}
 		}
+
 		renderer.SetDrawColor(0, 100, 0, 255)
 		renderer.Clear()
 		tri1.Update(timeDiff)

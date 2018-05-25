@@ -27,7 +27,7 @@ func (p *Triangle) Position(ox, oy float64) {
 }
 
 func (p *Triangle) Update(seconds float64) {
-	p.Rotation = p.Rotation - (seconds * 360)
+	//p.Rotation = p.Rotation - (seconds * 360)
 }
 
 func (p *Triangle) DrawX(renderer *sdl.Renderer) {
@@ -49,7 +49,32 @@ func (p *Triangle) Draw(renderer *sdl.Renderer) {
 	}
 }
 
-func (p *Triangle) InsideBounds(x float64, y float64) bool {
+func (p *Triangle) SetColor(newCol sdl.Color) {
+	p.Col = newCol
+}
+
+func (p *Triangle) PointInside(x float64, y float64) bool {
+	if p.PointInsideBounds(x, y) {
+
+		dx := (x - p.XOrigin) - p.X3
+		dy := (y - p.YOrigin) - p.Y3
+
+		dx32 := p.X3 - p.X2
+		dy23 := p.Y2 - p.Y3
+
+		D := dy23*(p.X1-p.X3) + dx32*(p.Y1-p.Y3)
+		s := dy23*dx + dx32*dy
+		t := (p.Y3-p.Y1)*dx + (p.X1-p.X3)*dy
+
+		if D < 0 {
+			return s <= 0 && t <= 0 && s+t >= D
+		}
+		return s >= 0 && t >= 0 && s+t <= D
+	}
+	return false
+}
+
+func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
 	xA := x - p.XOrigin
 	minX := min(p.X1, p.X2, p.X3)
 	if xA < minX {
