@@ -14,6 +14,33 @@ type Circle struct {
 	Enabled          bool
 }
 
+func (p *Circle) PointInside(x float64, y float64) bool {
+	if p.PointInsideBounds(x, y) {
+		dx := x - p.XOrigin
+		dy := y - p.YOrigin
+		return (dx*dx+dy*dy <= p.Radius*p.Radius)
+	}
+	return false
+}
+
+func (p *Circle) PointInsideBounds(x float64, y float64) bool {
+	if x < (p.XOrigin - p.Radius) {
+		return false
+	}
+	if x > (p.XOrigin + p.Radius) {
+		return false
+	}
+
+	if y < (p.YOrigin - p.Radius) {
+		return false
+	}
+	if y > (p.YOrigin + p.Radius) {
+		return false
+	}
+	return true
+
+}
+
 func (p *Circle) Update(seconds float64) {
 
 }

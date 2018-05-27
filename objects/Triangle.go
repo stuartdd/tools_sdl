@@ -12,13 +12,28 @@ type Triangle struct {
 	Name                   string
 	X1, Y1, X2, Y2, X3, Y3 float64
 	XOrigin, YOrigin       float64
-	Rotation               float64
+	RotationAccu           float64
+	Rotation               int
+	RotationSpeed          float64
 	Col                    sdl.Color
 	Enabled                bool
 }
 
 func (p *Triangle) Rotate(rot float64) {
-	p.Rotation = rot
+	rotF := p.RotationAccu + rot
+	rotP := p.Rotation
+	rotFInt := int(rotF)
+	if rotFInt != rotP {
+		p.X1, p.Y1 = tools.Rotate(p.X1, p.Y1, rotP-rotFInt)
+		p.X2, p.Y2 = tools.Rotate(p.X2, p.Y2, rotP-rotFInt)
+		p.X3, p.Y3 = tools.Rotate(p.X3, p.Y3, rotP-rotFInt)
+		p.Rotation = rotFInt
+	}
+	p.RotationAccu = rotF
+}
+
+func (p *Triangle) Update(seconds float64) {
+	p.Rotate(seconds * p.RotationSpeed)
 }
 
 func (p *Triangle) Position(ox, oy float64) {
@@ -26,31 +41,20 @@ func (p *Triangle) Position(ox, oy float64) {
 	p.YOrigin = oy
 }
 
-func (p *Triangle) Update(seconds float64) {
-	//p.Rotation = p.Rotation - (seconds * 360)
-}
-
-func (p *Triangle) DrawX(renderer *sdl.Renderer) {
-	xo := p.XOrigin
-	yo := p.YOrigin
-	if p.Enabled {
-		gfx.FilledTrigonColor(renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
-	}
-}
-
 func (p *Triangle) Draw(renderer *sdl.Renderer) {
-	xo := p.XOrigin
-	yo := p.YOrigin
-	px1, py1 := tools.Rotate(p.X1, p.Y1, p.Rotation)
-	px2, py2 := tools.Rotate(p.X2, p.Y2, p.Rotation)
-	px3, py3 := tools.Rotate(p.X3, p.Y3, p.Rotation)
 	if p.Enabled {
-		gfx.FilledTrigonColor(renderer, int32(xo+px1), int32(yo+py1), int32(xo+px2), int32(yo+py2), int32(xo+px3), int32(yo+py3), p.Col)
+		xo := p.XOrigin
+		yo := p.YOrigin
+		gfx.FilledTrigonColor(renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
 	}
 }
 
 func (p *Triangle) SetColor(newCol sdl.Color) {
 	p.Col = newCol
+}
+
+func (p *Triangle) SetRotationSpeed(rs float64) {
+	p.RotationSpeed = rs
 }
 
 func (p *Triangle) PointInside(x float64, y float64) bool {
@@ -98,18 +102,20 @@ func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
 
 func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool) *Triangle {
 	return &Triangle{
-		Name:     name,
-		X1:       px1,
-		Y1:       py1,
-		X2:       px2,
-		Y2:       py2,
-		X3:       px3,
-		Y3:       py3,
-		XOrigin:  pxOrigin,
-		YOrigin:  pyOrigin,
-		Rotation: 0,
-		Col:      col,
-		Enabled:  enabled,
+		Name:          name,
+		X1:            px1,
+		Y1:            py1,
+		X2:            px2,
+		Y2:            py2,
+		X3:            px3,
+		Y3:            py3,
+		XOrigin:       pxOrigin,
+		YOrigin:       pyOrigin,
+		Rotation:      0,
+		RotationAccu:  0.0,
+		RotationSpeed: 0,
+		Col:           col,
+		Enabled:       enabled,
 	}
 }
 

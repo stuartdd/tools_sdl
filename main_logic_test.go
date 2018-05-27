@@ -10,29 +10,29 @@ import (
 	"tools_sdl/tools"
 )
 
-const NANO_PER_SECOND float64 = 1000000000
 const ITERATIONS int = 100000000
 
-func TestInsideOutside(t *testing.T) {
+func TestInsideOutsideBounds(t *testing.T) {
 	tri1 := objects.NewTriangle("t1", -50, -50, 0, 50, 50, -50, 400, 300, tools.GetColour("Coral Blue"), true)
-	isInside(t, tri1, -50, 50)
-	isInside(t, tri1, 0, 50)
-	isInside(t, tri1, 50, -50)
-	isInside(t, tri1, 50, 50)
+	isInsideBounds(t, tri1, -50, 50)
+	isInsideBounds(t, tri1, 0, 50)
+	isInsideBounds(t, tri1, 50, -50)
+	isInsideBounds(t, tri1, 50, 50)
 
-	isOutside(t, tri1, -51, -51)
-	isOutside(t, tri1, 0, 51)
-	isOutside(t, tri1, 51, -51)
-	isOutside(t, tri1, 51, 51)
+	isOutsideBounds(t, tri1, -51, -51)
+	isOutsideBounds(t, tri1, 0, 51)
+	isOutsideBounds(t, tri1, 51, -51)
+	isOutsideBounds(t, tri1, 51, 51)
 }
 
-func isOutside(t *testing.T, shape interfaces.Drawable, x float64, y float64) {
-	if shape.InsideBounds(400+x, 300+y) {
+func isOutsideBounds(t *testing.T, shape interfaces.Drawable, x float64, y float64) {
+	if shape.PointInsideBounds(400+x, 300+y) {
 		t.Errorf("Test failed x:%f, y:%f are inside", 400+x, 300+y)
 	}
 }
-func isInside(t *testing.T, shape interfaces.Drawable, x float64, y float64) {
-	if !shape.InsideBounds(400+x, 300+y) {
+
+func isInsideBounds(t *testing.T, shape interfaces.Drawable, x float64, y float64) {
+	if !shape.PointInsideBounds(400+x, 300+y) {
 		t.Errorf("Test failed x:%f, y:%f are outside", 400+x, 300+y)
 	}
 }
@@ -67,14 +67,26 @@ func TestSumsMax(t *testing.T) {
 	}
 }
 
-func TestPerf(t *testing.T) {
+func TestPointInsideBounds(t *testing.T) {
 	shape := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 400, 300, tools.GetColour("Coral Blue"), true)
 	timeTemp := time.Now().UnixNano()
 
 	for i := 0; i < ITERATIONS; i++ {
-		shape.InsideBounds(400, 300)
+		shape.PointInsideBounds(400, 300)
 	}
 
 	time := time.Now().UnixNano() - timeTemp
-	fmt.Printf("NS: InsideBounds seconds: %f. %f nano seconds each", float64(time)/NANO_PER_SECOND, float64(time)/float64(ITERATIONS))
+	fmt.Printf("NS: PointInsideBounds seconds: %f. (7.470014) %f nano seconds each", float64(time)/NANO_PER_SECOND, float64(time)/float64(ITERATIONS))
+}
+
+func TestPointInside(t *testing.T) {
+	shape := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 400, 300, tools.GetColour("Coral Blue"), true)
+	timeTemp := time.Now().UnixNano()
+
+	for i := 0; i < ITERATIONS; i++ {
+		shape.PointInside(400, 300)
+	}
+
+	time := time.Now().UnixNano() - timeTemp
+	fmt.Printf("NS: PointInside seconds: %f. (12.167762) %f nano seconds each", float64(time)/NANO_PER_SECOND, float64(time)/float64(ITERATIONS))
 }

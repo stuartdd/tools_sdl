@@ -3,15 +3,16 @@ package tools
 
 import "math"
 
-const DEG float64 = (2 * math.Pi) / 360
+const CIRCLE = 360
+const DEG float64 = (2 * math.Pi) / CIRCLE
 
-var SinTables [360]float64
-var CosTables [360]float64
+var SinTables [CIRCLE]float64
+var CosTables [CIRCLE]float64
 
-func RotateXY(px, py, ox, oy, decimalDegrees float64) (float64, float64) {
-	norm := int(decimalDegrees) % 360
+func RotateXY(px, py, ox, oy float64, degrees int) (float64, float64) {
+	norm := degrees % CIRCLE
 	if norm < 0 {
-		norm = norm + 360
+		norm = norm + CIRCLE
 	}
 	cosTheta := CosTables[norm]
 	sinTheta := SinTables[norm]
@@ -20,10 +21,10 @@ func RotateXY(px, py, ox, oy, decimalDegrees float64) (float64, float64) {
 	return dx, dy
 }
 
-func Rotate(px, py, decimalDegrees float64) (float64, float64) {
-	norm := int(decimalDegrees) % 360
+func Rotate(px, py float64, degrees int) (float64, float64) {
+	norm := int(degrees) % CIRCLE
 	if norm < 0 {
-		norm = norm + 360
+		norm = norm + CIRCLE
 	}
 	cosTheta := CosTables[norm]
 	sinTheta := SinTables[norm]
@@ -34,7 +35,7 @@ func Rotate(px, py, decimalDegrees float64) (float64, float64) {
 
 func InitScaler() {
 	var r float64 = 0
-	for i := 0; i < 360; i++ {
+	for i := 0; i < CIRCLE; i++ {
 		SinTables[i] = math.Sin(r)
 		CosTables[i] = math.Cos(r)
 		r += DEG
