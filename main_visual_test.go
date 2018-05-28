@@ -39,12 +39,14 @@ func TestVisual(t *testing.T) {
 	tri2 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 300, 100, tools.GetOpaqueColour("Black", 100), true)
 	tri3 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 150, 300, tools.GetOpaqueColour("Black", 100), true)
 	tri4 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 300, 300, tools.GetOpaqueColour("Black", 100), true)
+	tri5 := objects.NewTriangle("t1", 0, 0, 0, 50, 50, 50, 150, 450, tools.GetOpaqueColour("Black", 100), true)
 	cir1 := objects.NewCircle("t1", 50, 450, 100, tools.GetOpaqueColour("Black", 100), true)
 	cir2 := objects.NewCircle("t1", 50, 600, 100, tools.GetOpaqueColour("Black", 100), true)
 	window.UpdateSurface()
 
 	tri3.SetRotationSpeed(5)
 	tri4.SetRotationSpeed(5)
+	tri5.SetRotationSpeed(50)
 	running := true
 	for running {
 
@@ -66,10 +68,12 @@ func TestVisual(t *testing.T) {
 
 		tri3.Update(0.05)
 		tri4.Update(0.05)
+		tri5.Update(0.05)
 		tri1.Draw(renderer)
 		tri2.Draw(renderer)
 		tri3.Draw(renderer)
 		tri4.Draw(renderer)
+		tri5.Draw(renderer)
 		cir1.Draw(renderer)
 		cir2.Draw(renderer)
 
@@ -95,7 +99,11 @@ func TestVisual(t *testing.T) {
 								if tri4.PointInside(float64(x), float64(y)) {
 									renderer.SetDrawColor(255, 255, 255, 255)
 								} else {
-									renderer.SetDrawColor(255, 0, 0, 255)
+									if tri5.PointInside(float64(x), float64(y)) {
+										renderer.SetDrawColor(255, 255, 255, 255)
+									} else {
+										renderer.SetDrawColor(255, 0, 0, 255)
+									}
 								}
 							}
 						}

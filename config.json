@@ -1,0 +1,8 @@
+{
+	"Name": "Play with triangles",
+	"DebugKeyboard":false,
+	"FullScreen" : false,
+	"NonFsWidth" : 800,
+	"NonFsHeight" : 600,	
+	"KeyBindings":{"Escape":"Quit", "Space":"Space", "F":"FullScreen"}
+}

@@ -36,11 +36,6 @@ func (p *Triangle) Update(seconds float64) {
 	p.Rotate(seconds * p.RotationSpeed)
 }
 
-func (p *Triangle) Position(ox, oy float64) {
-	p.XOrigin = ox
-	p.YOrigin = oy
-}
-
 func (p *Triangle) Draw(renderer *sdl.Renderer) {
 	if p.Enabled {
 		xo := p.XOrigin
@@ -119,7 +114,7 @@ func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin f
 	}
 }
 
-func min(a float64, b float64, c float64) float64 {
+func min(a, b, c float64) float64 {
 	if (a < b) && (a < c) {
 		return a
 	}
@@ -129,7 +124,7 @@ func min(a float64, b float64, c float64) float64 {
 	return c
 }
 
-func max(a float64, b float64, c float64) float64 {
+func max(a, b, c float64) float64 {
 	if (a > b) && (a > c) {
 		return a
 	}
