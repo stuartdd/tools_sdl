@@ -2,7 +2,10 @@
 package objects
 
 import (
-	"fmt"
+	"tools_sdl/tools"
+
+	"github.com/veandco/go-sdl2/gfx"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 type Rectangle struct {
@@ -30,6 +33,10 @@ func (p *Rectangle) Rotate(rot float64) {
 	p.RotationAccu = rotF
 }
 
+func (p *Rectangle) SetRotationSpeed(rs float64) {
+	p.RotationSpeed = rs
+}
+
 func (p *Rectangle) Update(seconds float64) {
 	p.Rotate(seconds * p.RotationSpeed)
 }
@@ -38,55 +45,62 @@ func (p *Rectangle) Draw(renderer *sdl.Renderer) {
 	if p.Enabled {
 		xo := p.XOrigin
 		yo := p.YOrigin
-		gfx.Filled
-		gfx.FilledTrigonColor(renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
+		gfx.FilledPolygonColor(
+			renderer,
+			[]int16{int16(xo + p.X1), int16(xo + p.X2), int16(xo + p.X3), int16(xo + p.X4)},
+			[]int16{int16(yo + p.Y1), int16(yo + p.Y2), int16(yo + p.Y3), int16(yo + p.Y4)},
+			p.Col)
 	}
 }
 
-func (p *Triangle) PointInside(x float64, y float64) bool {
+func (p *Rectangle) PointInside(x float64, y float64) bool {
 	if p.PointInsideBounds(x, y) {
-		return true
-		//		dx := (x - p.XOrigin) - p.X3
-		//		dy := (y - p.YOrigin) - p.Y3
-
-		//		dx32 := p.X3 - p.X2
-		//		dy23 := p.Y2 - p.Y3
-
-		//		D := dy23*(p.X1-p.X3) + dx32*(p.Y1-p.Y3)
-		//		s := dy23*dx + dx32*dy
-		//		t := (p.Y3-p.Y1)*dx + (p.X1-p.X3)*dy
-
-		//		if D < 0 {
-		//			return s <= 0 && t <= 0 && s+t >= D
-		//		}
-		//		return s >= 0 && t >= 0 && s+t <= D
+		return pointInsideTriangle(x, y, p.XOrigin, p.YOrigin, p.X2, p.Y2, p.X3, p.Y3, p.X4, p.Y4) ||
+			pointInsideTriangle(x, y, p.XOrigin, p.YOrigin, p.X1, p.Y1, p.X2, p.Y2, p.X4, p.Y4)
 	}
 	return false
 }
 
+func pointInsideTriangle(x, y, x0, y0, x1, y1, x2, y2, x3, y3 float64) bool {
+	dx := (x - x0) - x3
+	dy := (y - y0) - y3
+
+	dx32 := x3 - x2
+	dy23 := y2 - y3
+
+	D := dy23*(x1-x3) + dx32*(y1-y3)
+	s := dy23*dx + dx32*dy
+	t := (y3-y1)*dx + (x1-x3)*dy
+
+	if D < 0 {
+		return s <= 0 && t <= 0 && s+t >= D
+	}
+	return s >= 0 && t >= 0 && s+t <= D
+}
+
 func (p *Rectangle) PointInsideBounds(x float64, y float64) bool {
 	xA := x - p.XOrigin
-	minX := min(p.X1, p.X2, p.X3, p.X4)
+	minX := min4(p.X1, p.X2, p.X3, p.X4)
 	if xA < minX {
 		return false
 	}
-	maxX := max(p.X1, p.X2, p.X3, p.X4)
+	maxX := max4(p.X1, p.X2, p.X3, p.X4)
 	if xA > maxX {
 		return false
 	}
 	yA := y - p.YOrigin
-	minY := min(p.Y1, p.Y2, p.Y3, p.Y4)
+	minY := min4(p.Y1, p.Y2, p.Y3, p.Y4)
 	if yA < minY {
 		return false
 	}
-	maxY := max(p.Y1, p.Y2, p.Y3, p.Y4)
+	maxY := max4(p.Y1, p.Y2, p.Y3, p.Y4)
 	if yA > maxY {
 		return false
 	}
 	return true
 }
 
-func NewRectangle(name string, px1, py1, px2, py2, px3, py3, px4, py4, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool) *Triangle {
+func NewRectangle(name string, px1, py1, px2, py2, px3, py3, px4, py4, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool) *Rectangle {
 	return &Rectangle{
 		Name:          name,
 		X1:            px1,
@@ -107,7 +121,7 @@ func NewRectangle(name string, px1, py1, px2, py2, px3, py3, px4, py4, pxOrigin,
 	}
 }
 
-func min(a, b, c, d float64) float64 {
+func min4(a, b, c, d float64) float64 {
 	if (a < b) && (a < c) && (a < d) {
 		return a
 	}
@@ -120,7 +134,7 @@ func min(a, b, c, d float64) float64 {
 	return d
 }
 
-func max(a, b, c, d float64) float64 {
+func max4(a, b, c, d float64) float64 {
 	if (a > b) && (a > c) && (a > d) {
 		return a
 	}

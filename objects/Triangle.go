@@ -75,20 +75,20 @@ func (p *Triangle) PointInside(x float64, y float64) bool {
 
 func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
 	xA := x - p.XOrigin
-	minX := min(p.X1, p.X2, p.X3)
+	minX := min3(p.X1, p.X2, p.X3)
 	if xA < minX {
 		return false
 	}
-	maxX := max(p.X1, p.X2, p.X3)
+	maxX := max3(p.X1, p.X2, p.X3)
 	if xA > maxX {
 		return false
 	}
 	yA := y - p.YOrigin
-	minY := min(p.Y1, p.Y2, p.Y3)
+	minY := min3(p.Y1, p.Y2, p.Y3)
 	if yA < minY {
 		return false
 	}
-	maxY := max(p.Y1, p.Y2, p.Y3)
+	maxY := max3(p.Y1, p.Y2, p.Y3)
 	if yA > maxY {
 		return false
 	}
@@ -114,7 +114,7 @@ func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin f
 	}
 }
 
-func min(a, b, c float64) float64 {
+func min3(a, b, c float64) float64 {
 	if (a < b) && (a < c) {
 		return a
 	}
@@ -124,7 +124,7 @@ func min(a, b, c float64) float64 {
 	return c
 }
 
-func max(a, b, c float64) float64 {
+func max3(a, b, c float64) float64 {
 	if (a > b) && (a > c) {
 		return a
 	}

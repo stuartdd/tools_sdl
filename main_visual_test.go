@@ -36,17 +36,21 @@ func TestVisual(t *testing.T) {
 	tools.InitPalette()
 
 	tri1 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 150, 100, tools.GetOpaqueColour("Black", 100), true)
-	tri2 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 300, 100, tools.GetOpaqueColour("Black", 100), true)
-	tri3 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 150, 300, tools.GetOpaqueColour("Black", 100), true)
-	tri4 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 300, 300, tools.GetOpaqueColour("Black", 100), true)
-	tri5 := objects.NewTriangle("t1", 0, 0, 0, 50, 50, 50, 150, 450, tools.GetOpaqueColour("Black", 100), true)
-	cir1 := objects.NewCircle("t1", 50, 450, 100, tools.GetOpaqueColour("Black", 100), true)
-	cir2 := objects.NewCircle("t1", 50, 600, 100, tools.GetOpaqueColour("Black", 100), true)
+	tri2 := objects.NewTriangle("t2", -50, -50, 0, 51, 50, -50, 300, 100, tools.GetOpaqueColour("Black", 100), true)
+	tri3 := objects.NewTriangle("t3", -50, -50, 0, 51, 50, -50, 150, 250, tools.GetOpaqueColour("Black", 100), true)
+	tri4 := objects.NewTriangle("t4", -50, -50, 0, 51, 50, -50, 300, 250, tools.GetOpaqueColour("Black", 100), true)
+	tri5 := objects.NewTriangle("t5", 0, 0, 0, 50, 50, 50, 150, 400, tools.GetOpaqueColour("Black", 100), true)
+	cir1 := objects.NewCircle("c1", 50, 450, 100, tools.GetOpaqueColour("Black", 100), true)
+	cir2 := objects.NewCircle("c2", 50, 600, 100, tools.GetOpaqueColour("Black", 100), true)
+	rect1 := objects.NewRectangle("r1", -40, -40, 50, -50, 60, 60, -50, 50, 450, 250, tools.GetOpaqueColour("Black", 100), true)
+	rect2 := objects.NewRectangle("r2", -40, -40, 50, -50, 60, 60, -50, 50, 600, 250, tools.GetOpaqueColour("Black", 100), true)
 	window.UpdateSurface()
 
-	tri3.SetRotationSpeed(5)
-	tri4.SetRotationSpeed(5)
-	tri5.SetRotationSpeed(50)
+	tri3.SetRotationSpeed(60)
+	tri4.SetRotationSpeed(60)
+	tri5.SetRotationSpeed(60)
+	rect1.SetRotationSpeed(60)
+	rect2.SetRotationSpeed(60)
 	running := true
 	for running {
 
@@ -69,6 +73,8 @@ func TestVisual(t *testing.T) {
 		tri3.Update(0.05)
 		tri4.Update(0.05)
 		tri5.Update(0.05)
+		rect1.Update(0.05)
+		rect2.Update(0.05)
 		tri1.Draw(renderer)
 		tri2.Draw(renderer)
 		tri3.Draw(renderer)
@@ -76,6 +82,8 @@ func TestVisual(t *testing.T) {
 		tri5.Draw(renderer)
 		cir1.Draw(renderer)
 		cir2.Draw(renderer)
+		rect1.Draw(renderer)
+		rect2.Draw(renderer)
 
 		for i := 0; i < 20000; i++ {
 			x := rand.Intn(WIDTH)
@@ -102,7 +110,15 @@ func TestVisual(t *testing.T) {
 									if tri5.PointInside(float64(x), float64(y)) {
 										renderer.SetDrawColor(255, 255, 255, 255)
 									} else {
-										renderer.SetDrawColor(255, 0, 0, 255)
+										if rect1.PointInsideBounds(float64(x), float64(y)) {
+											renderer.SetDrawColor(255, 255, 255, 255)
+										} else {
+											if rect2.PointInside(float64(x), float64(y)) {
+												renderer.SetDrawColor(255, 255, 255, 255)
+											} else {
+												renderer.SetDrawColor(255, 0, 0, 255)
+											}
+										}
 									}
 								}
 							}
