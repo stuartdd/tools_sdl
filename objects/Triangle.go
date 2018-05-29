@@ -2,7 +2,8 @@
 package objects
 
 import (
-	"tools_sdl/tools"
+	"tools_sdl/structs"
+	"tools_sdl/utils"
 
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
@@ -14,9 +15,11 @@ type Triangle struct {
 	XOrigin, YOrigin       float64
 	RotationAccu           float64
 	Rotation               int
-	RotationSpeed          float64
+	MovementData           structs.MovementData
 	Col                    sdl.Color
 	Enabled                bool
+	InitialWidth           int32
+	InitialHeight          int32
 }
 
 func (p *Triangle) Rotate(rot float64) {
@@ -33,7 +36,9 @@ func (p *Triangle) Rotate(rot float64) {
 }
 
 func (p *Triangle) Update(seconds float64) {
-	p.Rotate(seconds * p.RotationSpeed)
+	p.Rotate(seconds * p.MovementData.Rotation)
+	p.XOrigin += p.MovementData.X
+	p.YOrigin += p.MovementData.Y
 }
 
 func (p *Triangle) Draw(renderer *sdl.Renderer) {
@@ -44,12 +49,32 @@ func (p *Triangle) Draw(renderer *sdl.Renderer) {
 	}
 }
 
+func (p *Triangle) SetMovementData(md structs.MovementData) {
+	p.MovementData = md
+}
+
+func (p *Triangle) GetMovementData() *structs.MovementData {
+	return &p.MovementData
+}
+
 func (p *Triangle) SetColor(newCol sdl.Color) {
 	p.Col = newCol
 }
 
-func (p *Triangle) SetRotationSpeed(rs float64) {
-	p.RotationSpeed = rs
+func (p *Triangle) Point() *sdl.Point {
+	return &sdl.Point{
+		X: int32(p.XOrigin),
+		Y: int32(p.YOrigin),
+	}
+}
+
+func (p *Triangle) Rect() *sdl.Rect {
+	return &sdl.Rect{
+		X: int32(p.XOrigin) - (p.InitialWidth / 2),
+		Y: int32(p.YOrigin) - (p.InitialHeight / 2),
+		W: p.InitialWidth,
+		H: p.InitialHeight,
+	}
 }
 
 func (p *Triangle) PointInside(x float64, y float64) bool {
@@ -75,20 +100,20 @@ func (p *Triangle) PointInside(x float64, y float64) bool {
 
 func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
 	xA := x - p.XOrigin
-	minX := min3(p.X1, p.X2, p.X3)
+	minX := Min3(p.X1, p.X2, p.X3)
 	if xA < minX {
 		return false
 	}
-	maxX := max3(p.X1, p.X2, p.X3)
+	maxX := Max3(p.X1, p.X2, p.X3)
 	if xA > maxX {
 		return false
 	}
 	yA := y - p.YOrigin
-	minY := min3(p.Y1, p.Y2, p.Y3)
+	minY := Min3(p.Y1, p.Y2, p.Y3)
 	if yA < minY {
 		return false
 	}
-	maxY := max3(p.Y1, p.Y2, p.Y3)
+	maxY := Max3(p.Y1, p.Y2, p.Y3)
 	if yA > maxY {
 		return false
 	}
@@ -96,6 +121,13 @@ func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
 }
 
 func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool) *Triangle {
+	X1 := int32(Min3(px1, px2, px3))
+	Y1 := int32(Min3(py1, py2, py3))
+	X2 := int32(Max3(px1, px2, px3))
+	Y2 := int32(Max3(py1, py2, py3))
+	W := X2 - X1
+	H := Y2 - Y1
+
 	return &Triangle{
 		Name:          name,
 		X1:            px1,
@@ -108,13 +140,15 @@ func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin f
 		YOrigin:       pyOrigin,
 		Rotation:      0,
 		RotationAccu:  0.0,
-		RotationSpeed: 0,
+		MovementData:  structs.MovementData{Rotation: 0, X: 0, Y: 0},
 		Col:           col,
 		Enabled:       enabled,
+		InitialWidth:  W,
+		InitialHeight: H,
 	}
 }
 
-func min3(a, b, c float64) float64 {
+func Min3(a, b, c float64) float64 {
 	if (a < b) && (a < c) {
 		return a
 	}
@@ -124,7 +158,7 @@ func min3(a, b, c float64) float64 {
 	return c
 }
 
-func max3(a, b, c float64) float64 {
+func Max3(a, b, c float64) float64 {
 	if (a > b) && (a > c) {
 		return a
 	}

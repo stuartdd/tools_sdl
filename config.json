@@ -4,5 +4,6 @@
 	"FullScreen" : false,
 	"NonFsWidth" : 800,
 	"NonFsHeight" : 600,	
-	"KeyBindings":{"Escape":"Quit", "Space":"Space", "F":"FullScreen"}
+	"KeyBindings":{"Escape":"Quit", "Space":"Space", "F":"FullScreen"},
+	"TextureFiles" : {"File1":"File1.bmp"}
 }

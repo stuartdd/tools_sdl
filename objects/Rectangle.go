@@ -2,9 +2,11 @@
 package objects
 
 import (
-	"tools_sdl/tools"
+	"tools_sdl/structs"
+	"tools_sdl/utils"
 
 	"github.com/veandco/go-sdl2/gfx"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -14,9 +16,12 @@ type Rectangle struct {
 	XOrigin, YOrigin               float64
 	RotationAccu                   float64
 	Rotation                       int
-	RotationSpeed                  float64
+	MovementData                   structs.MovementData
+	TextureData                    *structs.TextureData
 	Col                            sdl.Color
 	Enabled                        bool
+	InitialWidth                   int32
+	InitialHeight                  int32
 }
 
 func (p *Rectangle) Rotate(rot float64) {
@@ -33,23 +38,41 @@ func (p *Rectangle) Rotate(rot float64) {
 	p.RotationAccu = rotF
 }
 
-func (p *Rectangle) SetRotationSpeed(rs float64) {
-	p.RotationSpeed = rs
+func (p *Rectangle) SetMovementData(md structs.MovementData) {
+	p.MovementData = md
+}
+
+func (p *Rectangle) GetMovementData() *structs.MovementData {
+	return &p.MovementData
+}
+
+func (p *Rectangle) SetTextureData(td *structs.TextureData) {
+	p.TextureData = td
+}
+
+func (p *Rectangle) GetTextureData() *structs.TextureData {
+	return p.TextureData
 }
 
 func (p *Rectangle) Update(seconds float64) {
-	p.Rotate(seconds * p.RotationSpeed)
+	p.Rotate(seconds * p.MovementData.Rotation)
+	p.XOrigin += p.MovementData.X
+	p.YOrigin += p.MovementData.Y
 }
 
 func (p *Rectangle) Draw(renderer *sdl.Renderer) {
 	if p.Enabled {
-		xo := p.XOrigin
-		yo := p.YOrigin
-		gfx.FilledPolygonColor(
-			renderer,
-			[]int16{int16(xo + p.X1), int16(xo + p.X2), int16(xo + p.X3), int16(xo + p.X4)},
-			[]int16{int16(yo + p.Y1), int16(yo + p.Y2), int16(yo + p.Y3), int16(yo + p.Y4)},
-			p.Col)
+		if p.TextureData != nil {
+			renderer.CopyEx(p.TextureData.Texture, p.TextureData.Rect, p.Rect(), -p.RotationAccu, &sdl.Point{X: p.InitialWidth / 2, Y: p.InitialHeight / 2}, sdl.FLIP_NONE)
+		} else {
+			xo := p.XOrigin
+			yo := p.YOrigin
+			gfx.FilledPolygonColor(
+				renderer,
+				[]int16{int16(xo + p.X1), int16(xo + p.X2), int16(xo + p.X3), int16(xo + p.X4)},
+				[]int16{int16(yo + p.Y1), int16(yo + p.Y2), int16(yo + p.Y3), int16(yo + p.Y4)},
+				p.Col)
+		}
 	}
 }
 
@@ -59,6 +82,22 @@ func (p *Rectangle) PointInside(x float64, y float64) bool {
 			pointInsideTriangle(x, y, p.XOrigin, p.YOrigin, p.X1, p.Y1, p.X2, p.Y2, p.X4, p.Y4)
 	}
 	return false
+}
+
+func (p *Rectangle) Point() *sdl.Point {
+	return &sdl.Point{
+		X: int32(p.XOrigin),
+		Y: int32(p.YOrigin),
+	}
+}
+
+func (p *Rectangle) Rect() *sdl.Rect {
+	return &sdl.Rect{
+		X: int32(p.XOrigin) - (p.InitialWidth / 2),
+		Y: int32(p.YOrigin) - (p.InitialHeight / 2),
+		W: p.InitialWidth,
+		H: p.InitialHeight,
+	}
 }
 
 func pointInsideTriangle(x, y, x0, y0, x1, y1, x2, y2, x3, y3 float64) bool {
@@ -80,20 +119,20 @@ func pointInsideTriangle(x, y, x0, y0, x1, y1, x2, y2, x3, y3 float64) bool {
 
 func (p *Rectangle) PointInsideBounds(x float64, y float64) bool {
 	xA := x - p.XOrigin
-	minX := min4(p.X1, p.X2, p.X3, p.X4)
+	minX := Min4(p.X1, p.X2, p.X3, p.X4)
 	if xA < minX {
 		return false
 	}
-	maxX := max4(p.X1, p.X2, p.X3, p.X4)
+	maxX := Max4(p.X1, p.X2, p.X3, p.X4)
 	if xA > maxX {
 		return false
 	}
 	yA := y - p.YOrigin
-	minY := min4(p.Y1, p.Y2, p.Y3, p.Y4)
+	minY := Min4(p.Y1, p.Y2, p.Y3, p.Y4)
 	if yA < minY {
 		return false
 	}
-	maxY := max4(p.Y1, p.Y2, p.Y3, p.Y4)
+	maxY := Max4(p.Y1, p.Y2, p.Y3, p.Y4)
 	if yA > maxY {
 		return false
 	}
@@ -101,6 +140,13 @@ func (p *Rectangle) PointInsideBounds(x float64, y float64) bool {
 }
 
 func NewRectangle(name string, px1, py1, px2, py2, px3, py3, px4, py4, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool) *Rectangle {
+	X1 := int32(Min4(px1, px2, px3, px4))
+	Y1 := int32(Min4(py1, py2, py3, py4))
+	X2 := int32(Max4(px1, px2, px3, px4))
+	Y2 := int32(Max4(py1, py2, py3, py4))
+	W := X2 - X1
+	H := Y2 - Y1
+
 	return &Rectangle{
 		Name:          name,
 		X1:            px1,
@@ -115,13 +161,16 @@ func NewRectangle(name string, px1, py1, px2, py2, px3, py3, px4, py4, pxOrigin,
 		YOrigin:       pyOrigin,
 		Rotation:      0,
 		RotationAccu:  0.0,
-		RotationSpeed: 0,
+		MovementData:  structs.MovementData{Rotation: 0, X: 0, Y: 0},
+		TextureData:   nil,
 		Col:           col,
 		Enabled:       enabled,
+		InitialWidth:  W,
+		InitialHeight: H,
 	}
 }
 
-func min4(a, b, c, d float64) float64 {
+func Min4(a, b, c, d float64) float64 {
 	if (a < b) && (a < c) && (a < d) {
 		return a
 	}
@@ -134,7 +183,7 @@ func min4(a, b, c, d float64) float64 {
 	return d
 }
 
-func max4(a, b, c, d float64) float64 {
+func Max4(a, b, c, d float64) float64 {
 	if (a > b) && (a > c) && (a > d) {
 		return a
 	}

@@ -5,18 +5,21 @@ import (
 	"time"
 	"tools-config"
 	"tools_sdl/objects"
-	"tools_sdl/tools"
+	"tools_sdl/structs"
+	"tools_sdl/utils"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type ConfigData struct {
-	Name          string
-	KeyBindings   map[string]string
-	DebugKeyboard bool
-	FullScreen    bool
-	NonFsWidth    int32
-	NonFsHeight   int32
+	Name                string
+	ApplicationDataPath string
+	KeyBindings         map[string]string
+	TextureFiles        map[string]string
+	DebugKeyboard       bool
+	FullScreen          bool
+	NonFsWidth          int32
+	NonFsHeight         int32
 }
 
 const NANO_PER_SECOND float64 = 1000000000
@@ -31,12 +34,14 @@ var running bool = true
 func main() {
 
 	configData = ConfigData{
-		Name:          "Undefined",
-		KeyBindings:   make(map[string]string),
-		DebugKeyboard: true,
-		FullScreen:    false,
-		NonFsWidth:    800,
-		NonFsHeight:   500,
+		Name:                "Undefined",
+		ApplicationDataPath: "../",
+		KeyBindings:         make(map[string]string),
+		TextureFiles:        make(map[string]string),
+		DebugKeyboard:       true,
+		FullScreen:          false,
+		NonFsWidth:          800,
+		NonFsHeight:         500,
 	}
 
 	err := config.LoadJson("config.json", &configData)
@@ -76,7 +81,7 @@ func main() {
 	tools.InitPalette()
 
 	tri1 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 400, 300, tools.GetColour("Coral Blue"), true)
-	tri1.SetRotationSpeed(-360 / 60)
+	tri1.SetMovementData(structs.MovementData{Rotation: 360 / 60, X: 0, Y: 0})
 	cir1 := objects.NewCircle("t1", 50, 400, 300, tools.GetOpaqueColour("Black", 100), true)
 
 	for running {

@@ -5,7 +5,8 @@ import (
 	"math/rand"
 	"testing"
 	"tools_sdl/objects"
-	"tools_sdl/tools"
+	"tools_sdl/structs"
+	"tools_sdl/utils"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -14,6 +15,7 @@ const WIDTH = 900
 const HEIGHT = 600
 
 func TestVisual(t *testing.T) {
+	t.Log("START:")
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
 	}
@@ -46,11 +48,11 @@ func TestVisual(t *testing.T) {
 	rect2 := objects.NewRectangle("r2", -40, -40, 50, -50, 60, 60, -50, 50, 600, 250, tools.GetOpaqueColour("Black", 100), true)
 	window.UpdateSurface()
 
-	tri3.SetRotationSpeed(60)
-	tri4.SetRotationSpeed(60)
-	tri5.SetRotationSpeed(60)
-	rect1.SetRotationSpeed(60)
-	rect2.SetRotationSpeed(60)
+	tri3.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
+	tri4.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
+	tri5.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
+	rect1.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
+	rect2.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
 	running := true
 	for running {
 
@@ -85,7 +87,7 @@ func TestVisual(t *testing.T) {
 		rect1.Draw(renderer)
 		rect2.Draw(renderer)
 
-		for i := 0; i < 20000; i++ {
+		for i := 0; i < 10000; i++ {
 			x := rand.Intn(WIDTH)
 			y := rand.Intn(HEIGHT)
 

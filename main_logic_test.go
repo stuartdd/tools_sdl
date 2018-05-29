@@ -7,10 +7,11 @@ import (
 	"time"
 	"tools_sdl/interfaces"
 	"tools_sdl/objects"
-	"tools_sdl/tools"
+	"tools_sdl/utils"
 )
 
 const ITERATIONS int = 100000000
+const TEST_NANO_PER_SECOND float64 = 1000000000
 
 func TestInsideOutsideBounds(t *testing.T) {
 	tri1 := objects.NewTriangle("t1", -50, -50, 0, 50, 50, -50, 400, 300, tools.GetColour("Coral Blue"), true)
@@ -38,31 +39,31 @@ func isInsideBounds(t *testing.T, shape interfaces.Drawable, x float64, y float6
 }
 
 func TestSumsMin(t *testing.T) {
-	if tools.Min(0, 9, 10) != 0 {
+	if objects.Min3(0, 9, 10) != 0 {
 		t.Errorf("Min failed. Should return 0")
 	}
-	if tools.Min(9, 0, 10) != 0 {
+	if objects.Min3(9, 0, 10) != 0 {
 		t.Errorf("Min failed. Should return 0")
 	}
-	if tools.Min(9, 10, 0) != 0 {
+	if objects.Min3(9, 10, 0) != 0 {
 		t.Errorf("Min failed. Should return 0")
 	}
-	if tools.Min(9, -10, 0) != -10 {
+	if objects.Min3(9, -10, 0) != -10 {
 		t.Errorf("Min failed. Should return -10")
 	}
 }
 
 func TestSumsMax(t *testing.T) {
-	if tools.Max(0, 9, 10) != 10 {
+	if objects.Max3(0, 9, 10) != 10 {
 		t.Errorf("Max failed. Should return 10")
 	}
-	if tools.Max(9, 10, 0) != 10 {
+	if objects.Max3(9, 10, 0) != 10 {
 		t.Errorf("Max failed. Should return 10")
 	}
-	if tools.Max(10, 9, 0) != 10 {
+	if objects.Max3(10, 9, 0) != 10 {
 		t.Errorf("Max failed. Should return 10")
 	}
-	if tools.Max(9, -10, 0) != 9 {
+	if objects.Max3(9, -10, 0) != 9 {
 		t.Errorf("Max failed. Should return 10")
 	}
 }
@@ -76,7 +77,7 @@ func TestPointInsideBounds(t *testing.T) {
 	}
 
 	time := time.Now().UnixNano() - timeTemp
-	fmt.Printf("NS: PointInsideBounds seconds: %f. (7.470014) %f nano seconds each", float64(time)/NANO_PER_SECOND, float64(time)/float64(ITERATIONS))
+	fmt.Printf("NS: PointInsideBounds seconds: %f. (7.470014) %f nano seconds each", float64(time)/TEST_NANO_PER_SECOND, float64(time)/float64(ITERATIONS))
 }
 
 func TestPointInside(t *testing.T) {
@@ -88,5 +89,5 @@ func TestPointInside(t *testing.T) {
 	}
 
 	time := time.Now().UnixNano() - timeTemp
-	fmt.Printf("NS: PointInside seconds: %f. (12.167762) %f nano seconds each", float64(time)/NANO_PER_SECOND, float64(time)/float64(ITERATIONS))
+	fmt.Printf("NS: PointInside seconds: %f. (12.167762) %f nano seconds each", float64(time)/TEST_NANO_PER_SECOND, float64(time)/float64(ITERATIONS))
 }
