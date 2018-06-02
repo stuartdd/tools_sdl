@@ -3,7 +3,6 @@ package objects
 
 import (
 	"tools_sdl/structs"
-	"tools_sdl/utils"
 
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
@@ -15,46 +14,55 @@ type Triangle struct {
 	XOrigin, YOrigin       float64
 	RotationAccu           float64
 	Rotation               int
-	MovementData           structs.MovementData
+	MovementData           *structs.MovementData
 	Col                    sdl.Color
 	Enabled                bool
-	InitialWidth           int32
-	InitialHeight          int32
+	Filled                 bool
+	W                      int32
+	H                      int32
 }
 
-func (p *Triangle) Rotate(rot float64) {
+func (p *Triangle) rotate(rot float64) {
 	rotF := p.RotationAccu + rot
 	rotP := p.Rotation
 	rotFInt := int(rotF)
 	if rotFInt != rotP {
-		p.X1, p.Y1 = tools.Rotate(p.X1, p.Y1, rotP-rotFInt)
-		p.X2, p.Y2 = tools.Rotate(p.X2, p.Y2, rotP-rotFInt)
-		p.X3, p.Y3 = tools.Rotate(p.X3, p.Y3, rotP-rotFInt)
+		p.X1, p.Y1 = Rotate(p.X1, p.Y1, rotP-rotFInt)
+		p.X2, p.Y2 = Rotate(p.X2, p.Y2, rotP-rotFInt)
+		p.X3, p.Y3 = Rotate(p.X3, p.Y3, rotP-rotFInt)
 		p.Rotation = rotFInt
 	}
 	p.RotationAccu = rotF
 }
 
 func (p *Triangle) Update(seconds float64) {
-	p.Rotate(seconds * p.MovementData.Rotation)
-	p.XOrigin += p.MovementData.X
-	p.YOrigin += p.MovementData.Y
+	if p.MovementData != nil {
+		p.rotate(seconds * p.MovementData.Rotation)
+		p.XOrigin += p.MovementData.X
+		p.YOrigin += p.MovementData.Y
+	}
 }
 
 func (p *Triangle) Draw(renderer *sdl.Renderer) {
 	if p.Enabled {
-		xo := p.XOrigin
-		yo := p.YOrigin
-		gfx.FilledTrigonColor(renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
+		if p.Filled {
+			xo := p.XOrigin
+			yo := p.YOrigin
+			gfx.FilledTrigonColor(renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
+		} else {
+			xo := p.XOrigin
+			yo := p.YOrigin
+			gfx.TrigonColor(renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
+		}
 	}
 }
 
-func (p *Triangle) SetMovementData(md structs.MovementData) {
+func (p *Triangle) SetMovementData(md *structs.MovementData) {
 	p.MovementData = md
 }
 
 func (p *Triangle) GetMovementData() *structs.MovementData {
-	return &p.MovementData
+	return p.MovementData
 }
 
 func (p *Triangle) SetColor(newCol sdl.Color) {
@@ -70,10 +78,10 @@ func (p *Triangle) Point() *sdl.Point {
 
 func (p *Triangle) Rect() *sdl.Rect {
 	return &sdl.Rect{
-		X: int32(p.XOrigin) - (p.InitialWidth / 2),
-		Y: int32(p.YOrigin) - (p.InitialHeight / 2),
-		W: p.InitialWidth,
-		H: p.InitialHeight,
+		X: int32(p.XOrigin) - (p.W / 2),
+		Y: int32(p.YOrigin) - (p.H / 2),
+		W: p.W,
+		H: p.H,
 	}
 }
 
@@ -120,7 +128,7 @@ func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
 	return true
 }
 
-func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool) *Triangle {
+func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool, filled bool) *Triangle {
 	X1 := int32(Min3(px1, px2, px3))
 	Y1 := int32(Min3(py1, py2, py3))
 	X2 := int32(Max3(px1, px2, px3))
@@ -129,41 +137,22 @@ func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin f
 	H := Y2 - Y1
 
 	return &Triangle{
-		Name:          name,
-		X1:            px1,
-		Y1:            py1,
-		X2:            px2,
-		Y2:            py2,
-		X3:            px3,
-		Y3:            py3,
-		XOrigin:       pxOrigin,
-		YOrigin:       pyOrigin,
-		Rotation:      0,
-		RotationAccu:  0.0,
-		MovementData:  structs.MovementData{Rotation: 0, X: 0, Y: 0},
-		Col:           col,
-		Enabled:       enabled,
-		InitialWidth:  W,
-		InitialHeight: H,
+		Name:         name,
+		X1:           px1,
+		Y1:           py1,
+		X2:           px2,
+		Y2:           py2,
+		X3:           px3,
+		Y3:           py3,
+		XOrigin:      pxOrigin,
+		YOrigin:      pyOrigin,
+		Rotation:     0,
+		RotationAccu: 0.0,
+		MovementData: nil,
+		Col:          col,
+		Enabled:      enabled,
+		Filled:       filled,
+		W:            W,
+		H:            H,
 	}
-}
-
-func Min3(a, b, c float64) float64 {
-	if (a < b) && (a < c) {
-		return a
-	}
-	if b < c {
-		return b
-	}
-	return c
-}
-
-func Max3(a, b, c float64) float64 {
-	if (a > b) && (a > c) {
-		return a
-	}
-	if b > c {
-		return b
-	}
-	return c
 }

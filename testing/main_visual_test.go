@@ -1,5 +1,5 @@
 // TestInsides
-package main
+package testing
 
 import (
 	"math/rand"
@@ -34,25 +34,27 @@ func TestVisual(t *testing.T) {
 	}
 	defer renderer.Destroy()
 
-	tools.InitScaler()
-	tools.InitPalette()
+	objects.InitScaler()
+	utils.InitPalette()
 
-	tri1 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 150, 100, tools.GetOpaqueColour("Black", 100), true)
-	tri2 := objects.NewTriangle("t2", -50, -50, 0, 51, 50, -50, 300, 100, tools.GetOpaqueColour("Black", 100), true)
-	tri3 := objects.NewTriangle("t3", -50, -50, 0, 51, 50, -50, 150, 250, tools.GetOpaqueColour("Black", 100), true)
-	tri4 := objects.NewTriangle("t4", -50, -50, 0, 51, 50, -50, 300, 250, tools.GetOpaqueColour("Black", 100), true)
-	tri5 := objects.NewTriangle("t5", 0, 0, 0, 50, 50, 50, 150, 400, tools.GetOpaqueColour("Black", 100), true)
-	cir1 := objects.NewCircle("c1", 50, 450, 100, tools.GetOpaqueColour("Black", 100), true)
-	cir2 := objects.NewCircle("c2", 50, 600, 100, tools.GetOpaqueColour("Black", 100), true)
-	rect1 := objects.NewRectangle("r1", -40, -40, 50, -50, 60, 60, -50, 50, 450, 250, tools.GetOpaqueColour("Black", 100), true)
-	rect2 := objects.NewRectangle("r2", -40, -40, 50, -50, 60, 60, -50, 50, 600, 250, tools.GetOpaqueColour("Black", 100), true)
+	tri1 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 150, 100, utils.GetOpaqueColour("Black", 100), true, true)
+	tri2 := objects.NewTriangle("t2", -50, -50, 0, 51, 50, -50, 300, 100, utils.GetOpaqueColour("Black", 100), true, true)
+	tri3 := objects.NewTriangle("t3", -50, -50, 0, 51, 50, -50, 150, 250, utils.GetOpaqueColour("Black", 100), true, true)
+	tri4 := objects.NewTriangle("t4", -50, -50, 0, 51, 50, -50, 300, 250, utils.GetOpaqueColour("Black", 100), true, false)
+	tri5 := objects.NewTriangle("t5", 0, 0, 0, 50, 50, 50, 150, 400, utils.GetOpaqueColour("Black", 100), true, true)
+	cir1 := objects.NewCircle("c1", 50, 450, 100, utils.GetOpaqueColour("Black", 100), true, true)
+	cir2 := objects.NewCircle("c2", 50, 600, 100, utils.GetOpaqueColour("Black", 100), true, false)
+	rect1 := objects.NewRectangle("r1", -40, -40, 50, -50, 60, 60, -50, 50, 450, 250, utils.GetOpaqueColour("Black", 100), true, true)
+	rect2 := objects.NewRectangle("r2", -40, -40, 50, -50, 60, 60, -50, 50, 600, 250, utils.GetOpaqueColour("Black", 100), true, false)
 	window.UpdateSurface()
 
-	tri3.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
-	tri4.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
-	tri5.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
-	rect1.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
-	rect2.SetMovementData(structs.MovementData{Rotation: 60, X: 0, Y: 0})
+	movement := structs.MovementData{Rotation: 60, X: 0, Y: 0}
+
+	tri3.SetMovementData(&movement)
+	tri4.SetMovementData(&movement)
+	tri5.SetMovementData(&movement)
+	rect1.SetMovementData(&movement)
+	rect2.SetMovementData(&movement)
 	running := true
 	for running {
 

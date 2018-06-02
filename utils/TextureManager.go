@@ -1,5 +1,5 @@
 // Textures
-package tools
+package utils
 
 import (
 	"tools_sdl/structs"

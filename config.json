@@ -1,9 +1,10 @@
 {
 	"Name": "Play with triangles",
 	"DebugKeyboard":false,
-	"FullScreen" : false,
+	"FullScreen" : true,
 	"NonFsWidth" : 800,
 	"NonFsHeight" : 600,	
 	"KeyBindings":{"Escape":"Quit", "Space":"Space", "F":"FullScreen"},
-	"TextureFiles" : {"File1":"File1.bmp"}
+	"TextureFiles" : {"GoIcon":"GoIcon.bmp","LEM":"SHIPS-LEM.bmp"},
+	"Objects" : {"lem":"lem.json"}
 }
