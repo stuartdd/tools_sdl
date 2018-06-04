@@ -26,7 +26,7 @@ func TestVisual(t *testing.T) {
 	defer sdl.Quit()
 
 	window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		900, 600, sdl.WINDOW_SHOWN)
+		900, 600, sdl.WINDOW_SHOWN|sdl.WINDOW_ALWAYS_ON_TOP)
 	if err != nil {
 		panic(err)
 	}
@@ -84,7 +84,12 @@ func TestVisual(t *testing.T) {
 				break
 			}
 		}
-		world.X = world.X - 0.5
+		world.X = world.X - 1
+		world.Y = world.Y - 1
+		if world.X < -100 {
+			objects.Printf("%f", world.X)
+			running = false
+		}
 
 		renderer.SetDrawColor(0, 100, 0, 255)
 		renderer.Clear()

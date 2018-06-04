@@ -7,6 +7,7 @@ import (
 	"time"
 	"tools_sdl/interfaces"
 	"tools_sdl/objects"
+	"tools_sdl/structs"
 	"tools_sdl/utils"
 )
 
@@ -14,7 +15,8 @@ const ITERATIONS int = 100000000
 const TEST_NANO_PER_SECOND float64 = 1000000000
 
 func TestInsideOutsideBounds(t *testing.T) {
-	tri1 := objects.NewTriangle("t1", -50, -50, 0, 50, 50, -50, 400, 300, utils.GetColour("Coral Blue"), true, true)
+	world := &structs.World{Renderer: nil, X: 0, Y: 0}
+	tri1 := objects.NewTriangle(world, -50, -50, 0, 50, 50, -50, 400, 300, utils.GetColour("Coral Blue"), true, true)
 	isInsideBounds(t, tri1, -50, 50)
 	isInsideBounds(t, tri1, 0, 50)
 	isInsideBounds(t, tri1, 50, -50)
@@ -69,7 +71,8 @@ func TestSumsMax(t *testing.T) {
 }
 
 func TestPointInsideBounds(t *testing.T) {
-	shape := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 400, 300, utils.GetColour("Coral Blue"), true, true)
+	world := &structs.World{Renderer: nil, X: 0, Y: 0}
+	shape := objects.NewTriangle(world, -50, -50, 0, 51, 50, -50, 400, 300, utils.GetColour("Coral Blue"), true, true)
 	timeTemp := time.Now().UnixNano()
 
 	for i := 0; i < ITERATIONS; i++ {
@@ -81,7 +84,8 @@ func TestPointInsideBounds(t *testing.T) {
 }
 
 func TestPointInside(t *testing.T) {
-	shape := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 400, 300, utils.GetColour("Coral Blue"), true, true)
+	world := &structs.World{Renderer: nil, X: 0, Y: 0}
+	shape := objects.NewTriangle(world, -50, -50, 0, 51, 50, -50, 400, 300, utils.GetColour("Coral Blue"), true, true)
 	timeTemp := time.Now().UnixNano()
 
 	for i := 0; i < ITERATIONS; i++ {
