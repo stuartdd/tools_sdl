@@ -15,6 +15,10 @@ const WIDTH = 900
 const HEIGHT = 600
 
 func TestVisual(t *testing.T) {
+
+	textureFiles := make(map[string]string)
+	textureFiles["GoIcon"] = "GoIcon.bmp"
+
 	t.Log("START:")
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
@@ -34,18 +38,28 @@ func TestVisual(t *testing.T) {
 	}
 	defer renderer.Destroy()
 
+	world := &structs.World{Renderer: renderer, X: 0, Y: 0}
+
+	textureManager, err := utils.LoadTextures(renderer, "", textureFiles)
+	if err != nil {
+		panic(err)
+	}
+	defer textureManager.TextureDestroy()
+
 	objects.InitScaler()
 	utils.InitPalette()
 
-	tri1 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 150, 100, utils.GetOpaqueColour("Black", 100), true, true)
-	tri2 := objects.NewTriangle("t2", -50, -50, 0, 51, 50, -50, 300, 100, utils.GetOpaqueColour("Black", 100), true, true)
-	tri3 := objects.NewTriangle("t3", -50, -50, 0, 51, 50, -50, 150, 250, utils.GetOpaqueColour("Black", 100), true, true)
-	tri4 := objects.NewTriangle("t4", -50, -50, 0, 51, 50, -50, 300, 250, utils.GetOpaqueColour("Black", 100), true, false)
-	tri5 := objects.NewTriangle("t5", 0, 0, 0, 50, 50, 50, 150, 400, utils.GetOpaqueColour("Black", 100), true, true)
-	cir1 := objects.NewCircle("c1", 50, 450, 100, utils.GetOpaqueColour("Black", 100), true, true)
-	cir2 := objects.NewCircle("c2", 50, 600, 100, utils.GetOpaqueColour("Black", 100), true, false)
-	rect1 := objects.NewRectangle("r1", -40, -40, 50, -50, 60, 60, -50, 50, 450, 250, utils.GetOpaqueColour("Black", 100), true, true)
-	rect2 := objects.NewRectangle("r2", -40, -40, 50, -50, 60, 60, -50, 50, 600, 250, utils.GetOpaqueColour("Black", 100), true, false)
+	tri1 := objects.NewTriangle(world, -50, -50, 0, 51, 50, -50, 150, 100, utils.GetOpaqueColour("Black", 100), true, true)
+	tri2 := objects.NewTriangle(world, -50, -50, 0, 51, 50, -50, 300, 100, utils.GetOpaqueColour("Black", 100), true, true)
+	tri3 := objects.NewTriangle(world, -50, -50, 0, 51, 50, -50, 150, 250, utils.GetOpaqueColour("Black", 100), true, true)
+	tri4 := objects.NewTriangle(world, -50, -50, 0, 51, 50, -50, 300, 250, utils.GetOpaqueColour("Black", 100), true, false)
+	tri5 := objects.NewTriangle(world, 0, 0, 0, 50, 50, 50, 150, 400, utils.GetOpaqueColour("Black", 100), true, true)
+	cir1 := objects.NewCircle(world, 50, 450, 100, utils.GetOpaqueColour("Black", 100), true, true)
+	cir2 := objects.NewCircle(world, 50, 600, 100, utils.GetOpaqueColour("Black", 100), true, false)
+	rect1 := objects.NewRectangle(world, -40, -40, 50, -50, 60, 60, -50, 50, 450, 250, utils.GetOpaqueColour("Black", 100), true, true)
+	rect2 := objects.NewRectangle(world, -40, -40, 50, -50, 60, 60, -50, 50, 600, 250, utils.GetOpaqueColour("Black", 100), true, false)
+
+	pic := objects.NewPic(world, 300, 400, 100, 100, textureManager.Get("GoIcon"), true)
 	window.UpdateSurface()
 
 	movement := structs.MovementData{Rotation: 60, X: 0, Y: 0}
@@ -70,6 +84,7 @@ func TestVisual(t *testing.T) {
 				break
 			}
 		}
+		world.X = world.X - 0.5
 
 		renderer.SetDrawColor(0, 100, 0, 255)
 		renderer.Clear()
@@ -79,15 +94,16 @@ func TestVisual(t *testing.T) {
 		tri5.Update(0.05)
 		rect1.Update(0.05)
 		rect2.Update(0.05)
-		tri1.Draw(renderer)
-		tri2.Draw(renderer)
-		tri3.Draw(renderer)
-		tri4.Draw(renderer)
-		tri5.Draw(renderer)
-		cir1.Draw(renderer)
-		cir2.Draw(renderer)
-		rect1.Draw(renderer)
-		rect2.Draw(renderer)
+		tri1.Draw()
+		tri2.Draw()
+		tri3.Draw()
+		tri4.Draw()
+		tri5.Draw()
+		cir1.Draw()
+		cir2.Draw()
+		rect1.Draw()
+		rect2.Draw()
+		pic.Draw()
 
 		for i := 0; i < 10000; i++ {
 			x := rand.Intn(WIDTH)

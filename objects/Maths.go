@@ -43,8 +43,8 @@ func InitScaler() {
 }
 
 func PointInsideTriangle(x, y, x0, y0, x1, y1, x2, y2, x3, y3 float64) bool {
-	dx := (x - x0) - x3
-	dy := (y - y0) - y3
+	dx := x - x0 - x3
+	dy := y - y0 - y3
 
 	dx32 := x3 - x2
 	dy23 := y2 - y3

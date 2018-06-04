@@ -12,6 +12,7 @@ type Pic struct {
 	XOrigin, YOrigin float64
 	MovementData     *structs.MovementData
 	TextureData      *structs.TextureData
+	World            *structs.World
 	Enabled          bool
 }
 
@@ -38,10 +39,10 @@ func (p *Pic) Update(seconds float64) {
 	}
 }
 
-func (p *Pic) Draw(renderer *sdl.Renderer) {
+func (p *Pic) Draw() {
 	if p.Enabled {
 		if p.TextureData != nil {
-			renderer.Copy(
+			p.World.Renderer.Copy(
 				p.TextureData.Texture,
 				p.TextureData.Rect,
 				p.Rect())
@@ -55,15 +56,15 @@ func (p *Pic) PointInside(x float64, y float64) bool {
 
 func (p *Pic) Point() *sdl.Point {
 	return &sdl.Point{
-		X: int32(p.XOrigin),
-		Y: int32(p.YOrigin),
+		X: int32(p.XOrigin - p.World.X),
+		Y: int32(p.YOrigin - p.World.Y),
 	}
 }
 
 func (p *Pic) Rect() *sdl.Rect {
 	return &sdl.Rect{
-		X: int32(p.XOrigin - p.W/2),
-		Y: int32(p.YOrigin - p.H/2),
+		X: int32((p.XOrigin - p.World.X) - p.W/2),
+		Y: int32((p.YOrigin - p.World.Y) - p.H/2),
 		W: int32(p.W),
 		H: int32(p.H),
 	}
@@ -73,14 +74,18 @@ func (p *Pic) PointInsideBounds(x float64, y float64) bool {
 	return false
 }
 
-func NewPic(pxOrigin, pyOrigin, W, H float64, textureData *structs.TextureData, enabled bool) *Pic {
-
+func NewPic(world *structs.World, pxOrigin, pyOrigin, W, H float64, textureData *structs.TextureData, enabled bool) *Pic {
+	if textureData == nil {
+		panic("Texture data is not defined")
+	}
 	return &Pic{
-		XOrigin:     pxOrigin,
-		YOrigin:     pyOrigin,
-		W:           W,
-		H:           H,
-		TextureData: textureData,
-		Enabled:     enabled,
+		XOrigin:      pxOrigin,
+		YOrigin:      pyOrigin,
+		W:            W,
+		H:            H,
+		MovementData: nil,
+		World:        world,
+		TextureData:  textureData,
+		Enabled:      enabled,
 	}
 }

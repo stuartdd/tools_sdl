@@ -9,12 +9,12 @@ import (
 )
 
 type Triangle struct {
-	Name                   string
 	X1, Y1, X2, Y2, X3, Y3 float64
 	XOrigin, YOrigin       float64
 	RotationAccu           float64
 	Rotation               int
 	MovementData           *structs.MovementData
+	World                  *structs.World
 	Col                    sdl.Color
 	Enabled                bool
 	Filled                 bool
@@ -43,16 +43,14 @@ func (p *Triangle) Update(seconds float64) {
 	}
 }
 
-func (p *Triangle) Draw(renderer *sdl.Renderer) {
+func (p *Triangle) Draw() {
 	if p.Enabled {
+		xo := p.XOrigin - p.World.X
+		yo := p.YOrigin - p.World.Y
 		if p.Filled {
-			xo := p.XOrigin
-			yo := p.YOrigin
-			gfx.FilledTrigonColor(renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
+			gfx.FilledTrigonColor(p.World.Renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
 		} else {
-			xo := p.XOrigin
-			yo := p.YOrigin
-			gfx.TrigonColor(renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
+			gfx.TrigonColor(p.World.Renderer, int32(xo+p.X1), int32(yo+p.Y1), int32(xo+p.X2), int32(yo+p.Y2), int32(xo+p.X3), int32(yo+p.Y3), p.Col)
 		}
 	}
 }
@@ -71,15 +69,15 @@ func (p *Triangle) SetColor(newCol sdl.Color) {
 
 func (p *Triangle) Point() *sdl.Point {
 	return &sdl.Point{
-		X: int32(p.XOrigin),
-		Y: int32(p.YOrigin),
+		X: int32(p.XOrigin - p.World.X),
+		Y: int32(p.YOrigin - p.World.Y),
 	}
 }
 
 func (p *Triangle) Rect() *sdl.Rect {
 	return &sdl.Rect{
-		X: int32(p.XOrigin) - (p.W / 2),
-		Y: int32(p.YOrigin) - (p.H / 2),
+		X: int32(p.XOrigin-p.World.X) - (p.W / 2),
+		Y: int32(p.YOrigin-p.World.Y) - (p.H / 2),
 		W: p.W,
 		H: p.H,
 	}
@@ -88,8 +86,8 @@ func (p *Triangle) Rect() *sdl.Rect {
 func (p *Triangle) PointInside(x float64, y float64) bool {
 	if p.PointInsideBounds(x, y) {
 
-		dx := (x - p.XOrigin) - p.X3
-		dy := (y - p.YOrigin) - p.Y3
+		dx := x - (p.XOrigin - p.World.X) - p.X3
+		dy := y - (p.YOrigin - p.World.Y) - p.Y3
 
 		dx32 := p.X3 - p.X2
 		dy23 := p.Y2 - p.Y3
@@ -107,7 +105,7 @@ func (p *Triangle) PointInside(x float64, y float64) bool {
 }
 
 func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
-	xA := x - p.XOrigin
+	xA := x - (p.XOrigin - p.World.X)
 	minX := Min3(p.X1, p.X2, p.X3)
 	if xA < minX {
 		return false
@@ -116,7 +114,7 @@ func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
 	if xA > maxX {
 		return false
 	}
-	yA := y - p.YOrigin
+	yA := y - (p.YOrigin - p.World.Y)
 	minY := Min3(p.Y1, p.Y2, p.Y3)
 	if yA < minY {
 		return false
@@ -128,7 +126,7 @@ func (p *Triangle) PointInsideBounds(x float64, y float64) bool {
 	return true
 }
 
-func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool, filled bool) *Triangle {
+func NewTriangle(world *structs.World, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin float64, col sdl.Color, enabled bool, filled bool) *Triangle {
 	X1 := int32(Min3(px1, px2, px3))
 	Y1 := int32(Min3(py1, py2, py3))
 	X2 := int32(Max3(px1, px2, px3))
@@ -137,7 +135,6 @@ func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin f
 	H := Y2 - Y1
 
 	return &Triangle{
-		Name:         name,
 		X1:           px1,
 		Y1:           py1,
 		X2:           px2,
@@ -149,6 +146,7 @@ func NewTriangle(name string, px1, py1, px2, py2, px3, py3, pxOrigin, pyOrigin f
 		Rotation:     0,
 		RotationAccu: 0.0,
 		MovementData: nil,
+		World:        world,
 		Col:          col,
 		Enabled:      enabled,
 		Filled:       filled,

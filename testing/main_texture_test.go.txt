@@ -28,7 +28,7 @@ func TestTexture(t *testing.T) {
 	defer sdl.Quit()
 
 	window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		TEST_WIDTH, TEST_HEIGHT, sdl.WINDOW_SHOWN)
+		-1, -1, sdl.WINDOW_FULLSCREEN)
 	if err != nil {
 		panic(err)
 	}
@@ -40,9 +40,6 @@ func TestTexture(t *testing.T) {
 	}
 	defer renderer.Destroy()
 
-	objects.InitScaler()
-	utils.InitPalette()
-
 	textureManager, err := utils.LoadTextures(renderer, "", textureFiles)
 	if err != nil {
 		panic(err)
@@ -53,11 +50,17 @@ func TestTexture(t *testing.T) {
 		panic(fmt.Errorf("GoIcon Not loaded"))
 	}
 
+	objects.InitScaler()
+	utils.InitPalette()
+
+	pic := objects.NewPic(100, 100, 100, 100, textureManager.Get("GoIcon"), true)
 	rect1 := objects.NewRectangle("r1", -50, -50, 50, -50, 50, 50, -50, 50, 100, 100, utils.GetOpaqueColour("Black", 100), true, true)
 	rect1.SetMovementData(&structs.MovementData{Rotation: 15, X: 1, Y: 1})
 	rect1.SetTextureData(textureManager.Get("GoIcon"))
+
 	running := true
 	for running {
+		sdl.Delay(10)
 
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
@@ -76,10 +79,12 @@ func TestTexture(t *testing.T) {
 		if rect1.Point().Y > 450 {
 			running = false
 		}
+
 		renderer.SetDrawColor(0, 100, 0, 255)
 		renderer.Clear()
+		pic.Draw(renderer)
 		rect1.Draw(renderer)
-		for i := 0; i < 10000; i++ {
+		for i := 0; i < 100; i++ {
 			x := rand.Intn(TEST_WIDTH)
 			y := rand.Intn(TEST_HEIGHT)
 			if rect1.PointInside(float64(x), float64(y)) {

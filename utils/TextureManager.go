@@ -41,6 +41,7 @@ func loadTexture(renderer *sdl.Renderer, fileName string, name string) (*structs
 		return nil, err
 	}
 	defer surface.Free()
+	cRect := &surface.ClipRect
 
 	texture, err := renderer.CreateTextureFromSurface(surface)
 	if err != nil {
@@ -48,6 +49,6 @@ func loadTexture(renderer *sdl.Renderer, fileName string, name string) (*structs
 	}
 	return &structs.TextureData{Name: name,
 		Texture: texture,
-		Rect:    &surface.ClipRect,
+		Rect:    &sdl.Rect{X: cRect.X, Y: cRect.Y, W: cRect.W, H: cRect.H},
 	}, nil
 }

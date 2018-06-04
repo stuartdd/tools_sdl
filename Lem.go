@@ -66,6 +66,8 @@ func main() {
 	}
 	defer renderer.Destroy()
 
+	world := &structs.World{Renderer: renderer, X: 0, Y: 0}
+
 	textureManager, err := utils.LoadTextures(renderer, "", configData.TextureFiles)
 	if err != nil {
 		panic(err)
@@ -75,13 +77,14 @@ func main() {
 	objects.InitScaler()
 	utils.InitPalette()
 
-	rect1 := objects.NewRectangle("r1", -60, -60, 60, -60, 60, 60, -60, 60, 100, 100, utils.GetOpaqueColour("Black", 100), true, true)
-	rect1.SetMovementData(&structs.MovementData{Rotation: 80, X: 0.2, Y: 0.1})
+	rect1 := objects.NewRectangle(world, -60, -60, 60, -60, 60, 60, -60, 60, 400, 400, utils.GetOpaqueColour("Black", 100), true, true)
+	//	rect1.SetMovementData(&structs.MovementData{Rotation: 80, X: -0.2, Y: -0.401})
 	rect1.SetTextureData(textureManager.Get("LEM"))
 
-	tri1 := objects.NewTriangle("t1", -50, -50, 0, 51, 50, -50, 400, 300, utils.GetOpaqueColour("Coral Blue", 100), true, true)
+	tri1 := objects.NewTriangle(world, -50, -50, 0, 51, 50, -50, 400, 300, utils.GetOpaqueColour("Coral Blue", 100), true, true)
 	tri1.SetMovementData(&structs.MovementData{Rotation: 360 / 60, X: 0, Y: 0})
-	cir1 := objects.NewCircle("t1", 50, 400, 300, utils.GetOpaqueColour("Black", 100), true, true)
+	pic := objects.NewPic(world, 300, 400, 100, 300, textureManager.Get("GoIcon"), true)
+	cir1 := objects.NewCircle(world, 50, 400, 300, utils.GetOpaqueColour("Black", 100), true, true)
 
 	for running {
 		timeTemp := time.Now().UnixNano()
@@ -117,14 +120,20 @@ func main() {
 				}
 			}
 		}
+		world.X = world.X + 0.1
+		world.Y = world.Y + 0.1
 
 		renderer.SetDrawColor(0, 100, 0, 255)
 		renderer.Clear()
+		renderer.SetDrawColor(0, 0, 100, 255)
+		renderer.FillRect(&sdl.Rect{X: 0, Y: 0, W: 100, H: 100})
 		rect1.Update(timeDiff)
 		tri1.Update(timeDiff)
-		tri1.Draw(renderer)
-		cir1.Draw(renderer)
-		rect1.Draw(renderer)
+		pic.Draw()
+		tri1.Draw()
+		cir1.Draw()
+		rect1.Draw()
+
 		renderer.Present()
 	}
 }
