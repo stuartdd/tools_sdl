@@ -11,4 +11,6 @@ type ConfigData struct {
 	FullScreen          bool
 	NonFsWidth          int32
 	NonFsHeight         int32
+	FsWidth             int32
+	FsHeight            int32
 }

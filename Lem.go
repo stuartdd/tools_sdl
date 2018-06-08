@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	"tools-config"
+	config "tools_jsonconfig"
 	"tools_sdl/objects"
 	"tools_sdl/structs"
 	"tools_sdl/utils"
@@ -33,6 +33,8 @@ func main() {
 		FullScreen:          false,
 		NonFsWidth:          800,
 		NonFsHeight:         500,
+		FsWidth:             1920,
+		FsHeight:            1080,
 	}
 
 	err := config.LoadJson("config.json", &configData)
@@ -47,7 +49,7 @@ func main() {
 
 	if configData.FullScreen {
 		window, err := sdl.CreateWindow(configData.Name, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-			-1, -1, sdl.WINDOW_FULLSCREEN)
+			configData.FsWidth, configData.FsHeight, sdl.WINDOW_FULLSCREEN)
 		if err != nil {
 			panic(err)
 		}

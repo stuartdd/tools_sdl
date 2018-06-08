@@ -5,6 +5,8 @@
 	"FullScreen" : true,
 	"NonFsWidth" : 800,
 	"NonFsHeight" : 600,	
+	"FsWidth" : 2048,
+	"FsHeight" : 1152,	
 	"KeyBindings":{"Escape":"Quit", "Space":"Space", "F":"FullScreen"},
 	"TextureFiles" : {
 		"LEM":"SHIPS-LEM.bmp",
