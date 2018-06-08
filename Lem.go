@@ -15,6 +15,7 @@ const NANO_PER_SECOND float64 = 1000000000
 
 var configData structs.ConfigData
 var mainWindow *sdl.Window
+
 var timeLast int64 = time.Now().UnixNano()
 var timeDiff float64 = 0
 var timeTemp int64 = 0
@@ -24,6 +25,7 @@ func main() {
 
 	configData = structs.ConfigData{
 		Name:                "Undefined",
+		ImageLib:            "images",
 		ApplicationDataPath: "../",
 		KeyBindings:         make(map[string]string),
 		TextureFiles:        make(map[string]string),
@@ -66,9 +68,16 @@ func main() {
 	}
 	defer renderer.Destroy()
 
+	windowW, windowH, err := renderer.GetOutputSize()
+	if err != nil {
+		panic(err)
+	}
+	mainWindowMiddleWidth := float64(windowW / 2)
+	mainWindowMiddleHeight := float64(windowH / 2)
+
 	world := &structs.World{Renderer: renderer, X: 0, Y: 0}
 
-	textureManager, err := utils.LoadTextures(renderer, "", configData.TextureFiles)
+	textureManager, err := utils.LoadTextures(renderer, configData.ImageLib, configData.TextureFiles)
 	if err != nil {
 		panic(err)
 	}
@@ -77,19 +86,20 @@ func main() {
 	objects.InitScaler()
 	utils.InitPalette()
 
-	rect1 := objects.NewRectangle(world, -60, -60, 60, -60, 60, 60, -60, 60, 400, 400, utils.GetOpaqueColour("Black", 100), true, true)
-	//	rect1.SetMovementData(&structs.MovementData{Rotation: 80, X: -0.2, Y: -0.401})
-	rect1.SetTextureData(textureManager.Get("LEM"))
+	stars1 := objects.NewPicBasic(world, 0, 0, textureManager.Get("Stars_L_01"), true)
+	lem := objects.NewRectangle(world, -60, -60, 60, -60, 60, 60, -60, 60, 400, 400, utils.GetOpaqueColour("Black", 100), true, true)
+	lem.SetMovementData(&structs.MovementData{Rotation: 80, X: 0.01, Y: 0.03})
+	lem.SetTextureData(textureManager.Get("LEM"))
 
 	tri1 := objects.NewTriangle(world, -50, -50, 0, 51, 50, -50, 400, 300, utils.GetOpaqueColour("Coral Blue", 100), true, true)
 	tri1.SetMovementData(&structs.MovementData{Rotation: 360 / 60, X: 0, Y: 0})
-	pic := objects.NewPic(world, 300, 400, 100, 300, textureManager.Get("GoIcon"), true)
 	cir1 := objects.NewCircle(world, 50, 400, 300, utils.GetOpaqueColour("Black", 100), true, true)
 
 	for running {
 		timeTemp := time.Now().UnixNano()
 		timeDiff = float64(timeTemp-timeLast) / NANO_PER_SECOND
 		timeLast = timeTemp
+
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch t := event.(type) {
 			case *sdl.QuitEvent:
@@ -120,19 +130,22 @@ func main() {
 				}
 			}
 		}
-		world.X = world.X + 0.1
-		world.Y = world.Y + 0.1
 
-		renderer.SetDrawColor(0, 100, 0, 255)
-		renderer.Clear()
-		renderer.SetDrawColor(0, 0, 100, 255)
-		renderer.FillRect(&sdl.Rect{X: 0, Y: 0, W: 100, H: 100})
-		rect1.Update(timeDiff)
+		lem.Update(timeDiff)
 		tri1.Update(timeDiff)
-		pic.Draw()
+
+		/*
+			Track the LEM
+		*/
+		world.X = lem.XOrigin - mainWindowMiddleWidth
+		world.Y = lem.YOrigin - mainWindowMiddleHeight
+
+		renderer.SetDrawColor(0, 0, 0, 255)
+		renderer.Clear()
+		stars1.Draw()
 		tri1.Draw()
 		cir1.Draw()
-		rect1.Draw()
+		lem.Draw()
 
 		renderer.Present()
 	}

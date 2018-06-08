@@ -1,10 +1,20 @@
 {
 	"Name": "Play with triangles",
 	"DebugKeyboard":false,
+	"ImageLib" : "images",
 	"FullScreen" : true,
 	"NonFsWidth" : 800,
 	"NonFsHeight" : 600,	
 	"KeyBindings":{"Escape":"Quit", "Space":"Space", "F":"FullScreen"},
-	"TextureFiles" : {"GoIcon":"GoIcon.bmp","LEM":"SHIPS-LEM.bmp"},
+	"TextureFiles" : {
+		"LEM":"SHIPS-LEM.bmp",
+		"Stars_L_01":"bigstar1.bmp",
+		"Stars_L_02":"bigstar2.bmp",
+		"Stars_L_03":"bigstar3.bmp",
+		"Stars_S_04":"star1.bmp",
+		"Stars_S_05":"star2.bmp",
+		"Stars_S_06":"star3.bmp",
+		"Stars_S_07":"star4.bmp"
+		},
 	"Objects" : {"lem":"lem.json"}
 }

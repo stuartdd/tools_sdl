@@ -89,3 +89,19 @@ func NewPic(world *structs.World, pxOrigin, pyOrigin, W, H float64, textureData 
 		Enabled:      enabled,
 	}
 }
+
+func NewPicBasic(world *structs.World, pxOrigin, pyOrigin float64, textureData *structs.TextureData, enabled bool) *Pic {
+	if textureData == nil {
+		panic("Texture data is not defined")
+	}
+	return &Pic{
+		XOrigin:      pxOrigin,
+		YOrigin:      pyOrigin,
+		W:            float64(textureData.Rect.W),
+		H:            float64(textureData.Rect.H),
+		MovementData: nil,
+		World:        world,
+		TextureData:  textureData,
+		Enabled:      enabled,
+	}
+}

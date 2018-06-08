@@ -3,6 +3,7 @@ package structs
 
 type ConfigData struct {
 	Name                string
+	ImageLib            string
 	ApplicationDataPath string
 	KeyBindings         map[string]string
 	TextureFiles        map[string]string
