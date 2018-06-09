@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	config "tools-config"
+	config "tools_jsonconfig"
 	"tools_sdl/objects"
 	"tools_sdl/structs"
 	"tools_sdl/utils"
@@ -97,7 +97,12 @@ func main() {
 	tri1.SetMovementData(&structs.MovementData{Rotation: 360 / 60, X: 0, Y: 0})
 	cir1 := objects.NewCircle(world, 50, 400, 300, utils.GetOpaqueColour("Black", 100), true, true)
 
-	collection := 
+	collection := objects.NewCollection()
+	collection.Add(lem)
+	collection.Add(tri1)
+	collection.Add(cir1)
+	collection.Add(stars1)
+
 	for running {
 		timeTemp := time.Now().UnixNano()
 		timeDiff = float64(timeTemp-timeLast) / NANO_PER_SECOND
@@ -134,9 +139,6 @@ func main() {
 			}
 		}
 
-		lem.Update(timeDiff)
-		tri1.Update(timeDiff)
-
 		/*
 			Track the LEM
 		*/
@@ -145,10 +147,8 @@ func main() {
 
 		renderer.SetDrawColor(0, 0, 0, 255)
 		renderer.Clear()
-		stars1.Draw()
-		tri1.Draw()
-		cir1.Draw()
-		lem.Draw()
+
+		collection.UpdateDraw(timeDiff)
 
 		renderer.Present()
 	}

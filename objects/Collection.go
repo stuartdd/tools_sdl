@@ -6,31 +6,33 @@ import (
 )
 
 type Collection struct {
-	Objects []*interfaces.Drawable
+	Objects []interfaces.Drawable
 	Enabled bool
 }
 
 func NewCollection() *Collection {
-	return &Collection{Objects: make([]*interfaces.Drawable, 10), Enabled: true}
+	return &Collection{Objects: make([]interfaces.Drawable, 0), Enabled: true}
 }
 
-func (p *Collection) Add(obj *interfaces.Drawable) {
+func (p *Collection) Add(obj interfaces.Drawable) {
 	p.Objects = append(p.Objects, obj)
 }
 
 func (p *Collection) UpdateDraw(currentTime float64) {
-	for i := 0; i < len(p.Objects); i++ {
-		(*p.Objects[i]).Update(currentTime)
-		if p.Enabled {
-			(*p.Objects[i]).Draw()
+	if p.Enabled {
+		for i := 0; i < len(p.Objects); i++ {
+			(p.Objects[i]).Update(currentTime)
+			(p.Objects[i]).Draw()
 		}
+	} else {
+		p.Update(currentTime)
 	}
 }
 
 func (p *Collection) PointInside(x float64, y float64) bool {
 	if p.Enabled {
 		for i := 0; i < len(p.Objects); i++ {
-			if (*p.Objects[i]).PointInside(x, y) {
+			if (p.Objects[i]).PointInside(x, y) {
 				return true
 			}
 		}
@@ -41,7 +43,7 @@ func (p *Collection) PointInside(x float64, y float64) bool {
 func (p *Collection) PointInsideBounds(x float64, y float64) bool {
 	if p.Enabled {
 		for i := 0; i < len(p.Objects); i++ {
-			if (*p.Objects[i]).PointInsideBounds(x, y) {
+			if (p.Objects[i]).PointInsideBounds(x, y) {
 				return true
 			}
 		}
@@ -52,13 +54,13 @@ func (p *Collection) PointInsideBounds(x float64, y float64) bool {
 func (p *Collection) Draw() {
 	if p.Enabled {
 		for i := 0; i < len(p.Objects); i++ {
-			(*p.Objects[i]).Draw()
+			(p.Objects[i]).Draw()
 		}
 	}
 }
 
 func (p *Collection) Update(currentTime float64) {
 	for i := 0; i < len(p.Objects); i++ {
-		(*p.Objects[i]).Update(currentTime)
+		(p.Objects[i]).Update(currentTime)
 	}
 }
