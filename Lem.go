@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	config "tools_jsonconfig"
+	config "tools-config"
 	"tools_sdl/objects"
 	"tools_sdl/structs"
 	"tools_sdl/utils"
@@ -97,6 +97,7 @@ func main() {
 	tri1.SetMovementData(&structs.MovementData{Rotation: 360 / 60, X: 0, Y: 0})
 	cir1 := objects.NewCircle(world, 50, 400, 300, utils.GetOpaqueColour("Black", 100), true, true)
 
+	collection := 
 	for running {
 		timeTemp := time.Now().UnixNano()
 		timeDiff = float64(timeTemp-timeLast) / NANO_PER_SECOND
