@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	config "tools_jsonconfig"
+	config "tools-config"
 	"tools_sdl/objects"
 	"tools_sdl/structs"
 	"tools_sdl/utils"
